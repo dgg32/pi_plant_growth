@@ -17,17 +17,17 @@ if len(sys.argv) == 2:
 else:
     image_source = ''
 
-def get_bitwise (img, lower, higher, height_lower, height_higher, width_lower, width_higher):
+def get_bitwise (img, lower, higher, lower_bound, upper_bound, left_bound, right_bound):
     """Let a certain color of the image stand out.
 
     Args:
       img: A openCV image.
       lower: The lower HSV bound of the color.
       higher: The higher HSV bound of the color.
-      height_lower: The lower bound of the height, above which pixels are considered. It is used to limit the whereabouts of the standards.
-      height_higher: The higher bound of the height, below which pixels are considered. It is used to limit the whereabouts of the standards.
-      width_lower: The lower bound of the width, above which pixels are considered. It is used to limit the whereabouts of the standards.
-      width_higher: The higher bound of the width, below which pixels are considered. It is used to limit the whereabouts of the standards.
+      lower_bound: The lower bound of the height, above which pixels are considered. It is used to limit the whereabouts of the standards.
+      upper_bound: The higher bound of the height, below which pixels are considered. It is used to limit the whereabouts of the standards.
+      left_bound: The lower bound of the width, above which pixels are considered. It is used to limit the whereabouts of the standards.
+      right_bound: The higher bound of the width, below which pixels are considered. It is used to limit the whereabouts of the standards.
 
     Returns:
       The image in numpy array format with the color of interest.
@@ -42,9 +42,9 @@ def get_bitwise (img, lower, higher, height_lower, height_higher, width_lower, w
 
     ## limit the whereabouts of the standards
     for h in range(result.shape[0]):
-        if h > height_lower and h < height_higher:
+        if h > lower_bound and h < upper_bound:
             for w in range(result.shape[1]):
-                if w > width_lower and w < width_higher:
+                if w > left_bound and w < right_bound:
                     pass
                 else:
                     result[h, w, :] = 0
@@ -70,7 +70,7 @@ cv2.imwrite(f"processed_img/{current_time}_original.png", img)
 
 
 ## slice the green
-green = get_bitwise(img, (int(colorinfo["GREEN_HMin"]), int(colorinfo["GREEN_SMin"]), int(colorinfo["GREEN_VMin"])), (int(colorinfo["GREEN_HMax"]), int(colorinfo["GREEN_SMax"]), int(colorinfo["GREEN_VMax"])), 0, 480, 0, 640)
+green = get_bitwise(img, (int(colorinfo["GREEN_HMin"]), int(colorinfo["GREEN_SMin"]), int(colorinfo["GREEN_VMin"])), (int(colorinfo["GREEN_HMax"]), int(colorinfo["GREEN_SMax"]), int(colorinfo["GREEN_VMax"])), 0, img.shape[0], 0, img.shape[1])
 cv2.imwrite(f"processed_img/{current_time}_green.png", green)
 green_mask = green > 0
 green_pixels = np.count_nonzero(green_mask)
@@ -78,14 +78,14 @@ green_pixels = np.count_nonzero(green_mask)
 
 
 ## do the same for white and red standards
-white = get_bitwise(img, (int(colorinfo["WHITE_HMin"]), int(colorinfo["WHITE_SMin"]), int(colorinfo["WHITE_VMin"])), (int(colorinfo["WHITE_HMax"]), int(colorinfo["WHITE_SMax"]), int(colorinfo["WHITE_VMax"])), 400, 480, 200, 400)
+white = get_bitwise(img, (int(colorinfo["WHITE_HMin"]), int(colorinfo["WHITE_SMin"]), int(colorinfo["WHITE_VMin"])), (int(colorinfo["WHITE_HMax"]), int(colorinfo["WHITE_SMax"]), int(colorinfo["WHITE_VMax"])), int(colorinfo["WHITE_LOWER_BOUND"]), int(colorinfo["WHITE_UPPER_BOUND"]), int(colorinfo["WHITE_LEFT_BOUND"]), int(colorinfo["WHITE_RIGHT_BOUND"]))
 cv2.imwrite(f"processed_img/{current_time}_white.png", white)
 white_mask = white > 0
 white_pixels = np.count_nonzero(white_mask)
 
 
 
-red = get_bitwise(img,  (int(colorinfo["RED_HMin"]), int(colorinfo["RED_SMin"]), int(colorinfo["RED_VMin"])), (int(colorinfo["RED_HMax"]), int(colorinfo["RED_SMax"]), int(colorinfo["RED_VMax"])), 400, 480, 150, 320)
+red = get_bitwise(img,  (int(colorinfo["RED_HMin"]), int(colorinfo["RED_SMin"]), int(colorinfo["RED_VMin"])), (int(colorinfo["RED_HMax"]), int(colorinfo["RED_SMax"]), int(colorinfo["RED_VMax"])), int(colorinfo["RED_LOWER_BOUND"]), int(colorinfo["RED_UPPER_BOUND"]), int(colorinfo["RED_LEFT_BOUND"]), int(colorinfo["RED_RIGHT_BOUND"]))
 cv2.imwrite(f"processed_img/{current_time}_red.png", red)
 red_mask = red > 0
 red_pixels = np.count_nonzero(red_mask)
