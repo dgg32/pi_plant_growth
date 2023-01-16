@@ -1,1 +1,1 @@
-*/2 * * * * cd /home/pi/plant/ && python /home/pi/plant/robot.py >> /home/pi/Documents/sensor.log 2>&1
+0 17 * * * cd /home/pi/plant/ && python /home/pi/plant/robot.py >> /home/pi/Documents/sensor.log 2>&1
